@@ -1,0 +1,10 @@
+---
+slug: mikutter-plugin-plugin
+depends:
+  mikutter: '3.6'
+  plugin:
+  - command
+version: '1.0'
+author: osa_k
+name: Mikutter Plugin Plugin
+description: プラグイン管理するやつ
