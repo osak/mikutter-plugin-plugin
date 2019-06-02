@@ -13,8 +13,8 @@ Plugin.create(:mikutter_plugin_plugin) do
           created: pl.defined_time,
           modified: (Time.now.to_f * 1000000).to_i,
           user: MPP::User.new(
-              name: author,
-              idname: author,
+              name: pl.name,
+              idname: pl.name,
               icon: Skin['icon.png']
           )
       )
