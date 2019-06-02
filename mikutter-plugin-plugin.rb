@@ -2,6 +2,8 @@ require_relative 'model/plugin'
 require_relative 'model/user'
 
 Plugin.create(:mikutter_plugin_plugin) do
+  Command = Struct.new(:name, :args)
+
   tab :mpp_plugins do
     tl = timeline :mpp_plugins
     Plugin.instances.sort_by{|pl| pl.name}.reverse_each do |pl|
@@ -44,7 +46,32 @@ Plugin.create(:mikutter_plugin_plugin) do
     }
   end
 
+  filter_gui_postbox_post do |postbox, opt, cancel|
+    result = Plugin.filtering(:gui_get_gtk_widget, postbox)
+    return if !result.is_a?(Array) || result.empty?
+
+    gtk_postbox = result[0]
+    command = parse_command_line(gtk_postbox.widget_post.buffer.text)
+    return if !command
+
+    puts command
+    gtk_postbox.widget_post.buffer.text = ''
+    cancel.call
+  end
+
   def find_setting_spec(name)
     Plugin.filtering(:defined_settings, []).first.find{|s| s[2] == name}
+  end
+
+  # コマンド文字列をパースする。
+  # ==== Args
+  # [line] パースしたい文字列
+  # ==== Return
+  # Commandオブジェクト。lineがコマンド文字列でなかった場合はnil
+  def parse_command_line(line)
+    m = line.match(%r{^\s*/(?<command>\w+)\s+(?<args>.*)$})
+    return nil if !m
+
+    Command.new(m[:command], m[:args])
   end
 end
